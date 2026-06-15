@@ -62,6 +62,10 @@ public class UserService {
             fileId = fileService.upload(image);
         }
 
+        if(request.getNickname() == null && request.getPassword() == null){
+            throw new CustomException(ApiResponseErrorMessage.INVALID_REQUEST);
+        }
+
 
         if(request.getPassword() == null && !request.getNickname().isBlank()){
             if(fileId != null && !fileId.isBlank()){
