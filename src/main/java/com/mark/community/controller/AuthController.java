@@ -23,15 +23,7 @@ public class AuthController {
     @PostMapping("login")
     public ResponseEntity<?> loginUser(HttpSession session, @RequestBody LoginRequest request){
         User user = authService.loginUser(request);
-
-        User sessionData = new User();
-        sessionData.setUserId(user.getUserId());
-        sessionData.setEmail(user.getEmail());
-        sessionData.setNickname(user.getNickname());
-        sessionData.setProfileImage(user.getProfileImage());
-
-        session.setAttribute("user", sessionData);
-
+        session.setAttribute("userId", user.getId());
         return ResponseEntity
                 .status(ApiResponseMessage.SUCCESS_LOGIN.getStatusCode())
                 .body(new ApiResponse<>(ApiResponseMessage.SUCCESS_LOGIN));
