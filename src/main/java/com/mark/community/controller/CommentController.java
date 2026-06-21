@@ -3,7 +3,6 @@ package com.mark.community.controller;
 import com.mark.community.dto.CommentRequest;
 import com.mark.community.dto.CommentResponse;
 import com.mark.community.entity.Comment;
-import com.mark.community.entity.User;
 import com.mark.community.exception.CustomException;
 import com.mark.community.messages.ApiResponseErrorMessage;
 import com.mark.community.messages.ApiResponseMessage;
@@ -15,7 +14,6 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -29,26 +27,26 @@ public class CommentController {
     @PostMapping("/posts/{postId}/comments")
     public ResponseEntity<?> commentSave(
             @RequestBody CommentRequest request,
-            @PathVariable("postId") String postId,
+            @PathVariable("postId") Long postId,
             HttpServletRequest httpRequest) {
         HttpSession session = httpRequest.getSession(false);
 
         if(session == null){
             throw new CustomException(ApiResponseErrorMessage.EXPIRED_SESSION);
         }
-        User user = (User) session.getAttribute("user");
+        Long userId = (Long) session.getAttribute("userId");
         String idempotencyKey = httpRequest.getHeader("Idempotency-Key");
         ResponseEntity<?> idemResponseEntity = IdempotencyUtil.getResponse(idempotencyKey);
 
         if(idemResponseEntity != null) return idemResponseEntity;
 
-        Comment comment = commentService.commentSave(postId, request, user);
+        Comment comment = commentService.commentSave(postId, request, userId);
 
-        CommentResponse commentResponse = new CommentResponse(comment.getCommentId());
+        CommentResponse commentResponse = new CommentResponse(comment.getId());
 
         ResponseEntity<?> responseEntity = ResponseEntity
                 .status(ApiResponseMessage.SUCCESS_COMMENT_SAVE.getStatusCode())
-                .header("LOCATION", "/comment/" + comment.getCommentId())
+                .header("LOCATION", "/comment/" + comment.getId())
                 .body(new ApiResponse<>(ApiResponseMessage.SUCCESS_COMMENT_SAVE, commentResponse));
 
         IdempotencyUtil.setResponse(idempotencyKey, responseEntity);
@@ -58,7 +56,7 @@ public class CommentController {
 
     @PatchMapping("/comments/{commentId}")
     public ResponseEntity<?> editComment(
-            @PathVariable("commentId") String commentId,
+            @PathVariable("commentId") Long commentId,
             @RequestBody CommentRequest request,
             HttpServletRequest httpRequest
     ){
@@ -67,9 +65,9 @@ public class CommentController {
         if(session == null){
             throw new CustomException(ApiResponseErrorMessage.EXPIRED_SESSION);
         }
-        User user = (User) session.getAttribute("user");
+        Long userId = (Long) session.getAttribute("userId");
 
-        Comment comment = commentService.editComment(commentId, request, user);
+        Comment comment = commentService.editComment(commentId, request, userId);
 
         return ResponseEntity
                 .status(ApiResponseMessage.SUCCESS_UPDATE_COMMENT.getStatusCode())
@@ -78,15 +76,15 @@ public class CommentController {
     }
 
     @DeleteMapping("/comments/{commentId}")
-    public ResponseEntity<?> deleteComment(@PathVariable("commentId") String commentId, HttpServletRequest httpRequest){
+    public ResponseEntity<?> deleteComment(@PathVariable("commentId") Long commentId, HttpServletRequest httpRequest){
         HttpSession session = httpRequest.getSession(false);
 
         if(session == null){
             throw new CustomException(ApiResponseErrorMessage.EXPIRED_SESSION);
         }
-        User user = (User) session.getAttribute("user");
+        Long userId = (Long) session.getAttribute("userId");
 
-        Comment comment = commentService.deleteComment(commentId, user);
+        Comment comment = commentService.deleteComment(commentId, userId);
 
         return ResponseEntity
                 .status(ApiResponseMessage.SUCCESS_DELETE_COMMENT.getStatusCode())
@@ -95,7 +93,7 @@ public class CommentController {
 
 
     @GetMapping("/posts/{postId}/comments")
-    public ResponseEntity<?> getComments(@PathVariable("postId") String postId, HttpServletRequest httpRequest){
+    public ResponseEntity<?> getComments(@PathVariable("postId") Long postId, HttpServletRequest httpRequest){
 
         HttpSession session = httpRequest.getSession(false);
 
@@ -103,22 +101,11 @@ public class CommentController {
             throw new CustomException(ApiResponseErrorMessage.EXPIRED_SESSION);
         }
 
-        List<Comment> comments = commentService.getComments(postId);
-        List<CommentResponse> commentResponses = new ArrayList<>();
-
-        for(Comment comment : comments){
-             CommentResponse commentResponse =  new CommentResponse(
-                     comment.getNickname(),
-                     comment.getComment(),
-                     comment.getUserId(),
-                     comment.isDeleted()
-                     );
-             commentResponses.add(commentResponse);
-        }
+        List<CommentResponse> comments = commentService.getComments(postId);
 
         return ResponseEntity
                 .status(ApiResponseMessage.SUCCESS_GET_COMMENTS.getStatusCode())
-                .body(new ApiResponse<>(ApiResponseMessage.SUCCESS_GET_COMMENTS, commentResponses));
+                .body(new ApiResponse<>(ApiResponseMessage.SUCCESS_GET_COMMENTS, comments));
 
     }
 

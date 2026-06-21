@@ -36,18 +36,18 @@ public class PostController {
         if(session == null){
             throw new CustomException(ApiResponseErrorMessage.EXPIRED_SESSION);
         }
-        User user = (User) session.getAttribute("user");
+        Long userId = (Long) session.getAttribute("userId");
         String idempotencyKey = httpRequest.getHeader("Idempotency-Key");
         ResponseEntity<?> idemResponseEntity = IdempotencyUtil.getResponse(idempotencyKey);
 
         if(idemResponseEntity != null) return idemResponseEntity;
 
-        Post post =  postService.postTemp(request, user);
+        Post post =  postService.postTemp(request, userId);
 
         ResponseEntity<?> responseEntity = ResponseEntity
                 .status(ApiResponseMessage.SUCCESS_POST_TEMP.getStatusCode())
-                .header("Location", "/posts/" + post.getPostId())
-                .body(new ApiResponse<>(ApiResponseMessage.SUCCESS_POST_TEMP, new PostTempResponse(post.getPostId())));
+                .header("Location", "/posts/" + post.getId())
+                .body(new ApiResponse<>(ApiResponseMessage.SUCCESS_POST_TEMP, new PostTempResponse(post.getId())));
 
          IdempotencyUtil.setResponse(idempotencyKey, responseEntity);
 
@@ -55,7 +55,7 @@ public class PostController {
     }
 
     @PatchMapping("/{postId}/temp")
-    public ResponseEntity<?> postAutoTemp(@PathVariable("postId") String postId,
+    public ResponseEntity<?> postAutoTemp(@PathVariable("postId") Long postId,
                                           @RequestPart("request") PostTempRequest request,
                                           @RequestPart("images") MultipartFile[] images,
                                           HttpServletRequest httpRequest
@@ -65,32 +65,32 @@ public class PostController {
         if(session == null){
             throw new CustomException(ApiResponseErrorMessage.EXPIRED_SESSION);
         }
-        Post post = postService.postAutoTemp(postId, request, images);
+        PostTempResponse postTempResponse = postService.postAutoTemp(postId, request, images);
 
         return ResponseEntity
                 .status(ApiResponseMessage.SUCCESS_POST_TEMP.getStatusCode())
-                .body(new ApiResponse<>(ApiResponseMessage.SUCCESS_POST_TEMP,
-                        new PostTempResponse(postId, post.getFileIds())));
+                .body(new ApiResponse<>(ApiResponseMessage.SUCCESS_POST_TEMP, postTempResponse));
     }
 
     @DeleteMapping("/{postId}")
-    public ResponseEntity<?> deletePost(@PathVariable("postId") String postId, HttpServletRequest httpRequest){
+    public ResponseEntity<?> deletePost(@PathVariable("postId") Long postId, HttpServletRequest httpRequest){
         HttpSession session = httpRequest.getSession(false);
 
         if(session == null){
             throw new CustomException(ApiResponseErrorMessage.EXPIRED_SESSION);
         }
 
-        User user = (User) session.getAttribute("user");
+        Long userId = (Long) session.getAttribute("userId");
 
-        postService.deletePost(postId, user.getUserId());
+        postService.deletePost(postId, userId);
+
         return ResponseEntity
                 .status(ApiResponseMessage.SUCCESS_DELETE_POST.getStatusCode())
                 .body(new ApiResponse<>(ApiResponseMessage.SUCCESS_DELETE_POST));
     }
 
     @GetMapping("/temp")
-    public ResponseEntity<?> getTempPost(@RequestParam("postId") String postId, HttpServletRequest httpRequest){
+    public ResponseEntity<?> getTempPost(@RequestParam("postId") Long postId, HttpServletRequest httpRequest){
         HttpSession session = httpRequest.getSession(false);
 
         if(session == null){
@@ -105,7 +105,7 @@ public class PostController {
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<?> getPost(@PathVariable("postId") String postId, HttpServletRequest httpRequest){
+    public ResponseEntity<?> getPost(@PathVariable("postId") Long postId, HttpServletRequest httpRequest){
 
         HttpSession session = httpRequest.getSession(false);
 
@@ -113,9 +113,9 @@ public class PostController {
             throw new CustomException(ApiResponseErrorMessage.EXPIRED_SESSION);
         }
 
-        User user = (User) session.getAttribute("user");
+        Long userId = (Long) session.getAttribute("userId");
 
-        PostResponse postResponse = postService.getPost(postId, user);
+        PostResponse postResponse = postService.getPost(postId, userId);
 
 
         return ResponseEntity
@@ -124,7 +124,7 @@ public class PostController {
     }
 
     @PutMapping("/{postId}")
-    public ResponseEntity<?> savePost(@PathVariable("postId") String postId,
+    public ResponseEntity<?> savePost(@PathVariable("postId") Long postId,
                                       @RequestPart("request") PostRequest request,
                                       @RequestPart("images") MultipartFile[] images,
                                       HttpServletRequest httpRequest){
@@ -139,12 +139,12 @@ public class PostController {
         return ResponseEntity
                 .status(ApiResponseMessage.SUCCESS_POST_SAVE.getStatusCode())
                 .body(new ApiResponse<>(ApiResponseMessage.SUCCESS_POST_SAVE,
-                        new PostResponse(post.getPostId())));
+                        new PostResponse(post.getId())));
     }
 
     @GetMapping
     public ResponseEntity<?> getPosts(@RequestParam(value = "size", defaultValue = "10") int size,
-                                      @RequestParam("lastPostId") String lastPostId,
+                                      @RequestParam(value = "lastPostId", required = false) Long lastPostId,
                                       HttpServletRequest httpRequest){
         HttpSession session = httpRequest.getSession(false);
 
@@ -161,14 +161,16 @@ public class PostController {
     }
 
     @PostMapping("/{postId}/likes")
-    public ResponseEntity<?> addLike(@PathVariable("postId") String postId, HttpServletRequest httpRequest){
+    public ResponseEntity<?> addLike(@PathVariable("postId") Long postId, HttpServletRequest httpRequest){
         HttpSession session = httpRequest.getSession(false);
 
         if(session == null){
             throw new CustomException(ApiResponseErrorMessage.EXPIRED_SESSION);
         }
 
-        postService.addLike(postId);
+        Long userId = (Long) session.getAttribute("userId");
+
+        postService.addLike(postId, userId);
 
         return ResponseEntity
                 .status(ApiResponseMessage.SUCCESS_ADD_LIKE.getStatusCode())
@@ -177,14 +179,16 @@ public class PostController {
 
 
     @DeleteMapping("/{postId}/likes")
-    public ResponseEntity<?> deleteLike(@PathVariable("postId") String postId, HttpServletRequest httpRequest){
+    public ResponseEntity<?> deleteLike(@PathVariable("postId") Long postId, HttpServletRequest httpRequest){
         HttpSession session = httpRequest.getSession(false);
 
         if(session == null){
             throw new CustomException(ApiResponseErrorMessage.EXPIRED_SESSION);
         }
 
-        postService.deleteLike(postId);
+        Long userId = (Long) session.getAttribute("userId");
+
+        postService.deleteLike(postId, userId);
 
         return ResponseEntity
                 .status(ApiResponseMessage.SUCCESS_DELETE_LIKE.getStatusCode())
@@ -192,7 +196,7 @@ public class PostController {
     }
 
     @PatchMapping("/{postId}")
-    public ResponseEntity<?> editPost(@PathVariable("postId") String postId,
+    public ResponseEntity<?> editPost(@PathVariable("postId") Long postId,
                                           @RequestPart("request") PostTempRequest request,
                                           @RequestPart("images") MultipartFile[] images,
                                           HttpServletRequest httpRequest
@@ -202,10 +206,10 @@ public class PostController {
         if(session == null){
             throw new CustomException(ApiResponseErrorMessage.EXPIRED_SESSION);
         }
-        User user = (User) session.getAttribute("user");
+        Long userId = (Long) session.getAttribute("userId");
 
 
-        Post post = postService.editPost(postId, request, images, user.getUserId());
+        Post post = postService.editPost(postId, request, images, userId);
 
         return ResponseEntity
                 .status(ApiResponseMessage.SUCCESS_UPDATE_POST.getStatusCode())
@@ -213,14 +217,15 @@ public class PostController {
     }
 
     @PostMapping("/{postId}/reports")
-    public ResponseEntity<?> addReports(@PathVariable("postId") String postId, HttpServletRequest httpRequest){
+    public ResponseEntity<?> addReports(@PathVariable("postId") Long postId, HttpServletRequest httpRequest){
         HttpSession session = httpRequest.getSession(false);
 
         if(session == null){
             throw new CustomException(ApiResponseErrorMessage.EXPIRED_SESSION);
         }
+        Long userId = (Long) session.getAttribute("userId");
 
-        postService.addReports(postId);
+        postService.addReports(postId, userId);
 
         return ResponseEntity
                 .status(ApiResponseMessage.SUCCESS_ADD_REPORT.getStatusCode())

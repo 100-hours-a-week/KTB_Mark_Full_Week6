@@ -4,7 +4,6 @@ package com.mark.community.controller;
 import com.mark.community.dto.EditUserRequest;
 import com.mark.community.dto.RegisterRequest;
 import com.mark.community.dto.RegisterResponse;
-import com.mark.community.entity.User;
 import com.mark.community.exception.CustomException;
 import com.mark.community.messages.ApiResponseErrorMessage;
 import com.mark.community.messages.ApiResponseMessage;
@@ -45,9 +44,9 @@ public class UserController {
             if(session == null){
                 throw new CustomException(ApiResponseErrorMessage.EXPIRED_SESSION);
             }
-            User user = (User) session.getAttribute("user");
+            Long userId = (Long) session.getAttribute("userId");
 
-            userService.editUser(request, image, user.getUserId());
+            userService.editUser(request, image, userId);
 
             return ResponseEntity
                     .status(ApiResponseMessage.SUCCESS_UPDATE_USER.getStatusCode())
@@ -60,8 +59,8 @@ public class UserController {
             if(session == null){
                 throw new CustomException(ApiResponseErrorMessage.EXPIRED_SESSION);
             }
-            User user = (User) session.getAttribute("user");
-            userService.deleteUser(user.getUserId());
+            Long userId = (Long) session.getAttribute("userId");
+            userService.deleteUser(userId);
 
             return ResponseEntity
                     .status(ApiResponseMessage.SUCCESS_DELETE_USER.getStatusCode())
