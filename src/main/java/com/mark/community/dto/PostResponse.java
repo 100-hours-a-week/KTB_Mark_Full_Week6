@@ -1,37 +1,42 @@
 package com.mark.community.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
 
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Getter
 public class PostResponse {
-    private String postId;
+    private Long postId;
     private String title;
     private String body;
-    private String thumbnailId;
+    private Long thumbnailId;
     private String nickname;
-    private String userId;
+    private Long userId;
     private Counts counts;
     private String postTime;
+    private List<Long> fileIds;
 
     private boolean deleted;
     private boolean blind;
     private boolean edited;
     private boolean permission;
 
-    public PostResponse(String postId){
+
+
+    public PostResponse(Long postId){
         this.postId = postId;
     }
 
-    public PostResponse(String postId,
+    public PostResponse(Long postId,
                         String title,
                         String body,
-                        String thumbnailId,
+                        Long thumbnailId,
                         String nickname,
-                        String userId,
+                        Long userId,
                         Counts counts,
-                        List<String> fileIds,
+                        List<Long> fileIds,
                         boolean edited,
                         boolean permission){
         this.postId = postId;
@@ -46,12 +51,12 @@ public class PostResponse {
         this.permission = permission;
     }
 
-    public PostResponse(String postId,
+    public PostResponse(Long postId,
                         String title,
                         String body,
-                        String thumbnailId,
+                        Long thumbnailId,
                         String nickname,
-                        String userId,
+                        Long userId,
                         Counts counts,
                         String postTime,
                         boolean deleted,
@@ -72,58 +77,8 @@ public class PostResponse {
 
     }
 
-    private List<String> fileIds;
 
 
-    public String getTitle() {
-        return title;
-    }
 
-    public String getBody() {
-        return body;
-    }
 
-    public String getThumbnailId() {
-        return thumbnailId;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public List<String> getFileIds() {
-        return fileIds;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public boolean isBlind() {
-        return blind;
-    }
-
-    public boolean isEdited() {
-        return edited;
-    }
-
-    public Counts getCounts() {
-        return counts;
-    }
-
-    public String getPostId() {
-        return postId;
-    }
-
-    public String getPostTime(){
-        return postTime;
-    }
-
-    public boolean isPermission() {
-        return permission;
-    }
 }
