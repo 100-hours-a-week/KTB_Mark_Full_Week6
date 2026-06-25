@@ -11,7 +11,6 @@ import com.mark.community.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -56,7 +55,7 @@ public class UserService {
 
     }
 
-    public void editUser(@RequestPart("request") EditUserRequest request, MultipartFile image , Long userId){
+    public void editUser(EditUserRequest request, MultipartFile image , Long userId){
         User user = userRepository.findById(userId).
                 orElseThrow(() -> new CustomException(ApiResponseErrorMessage.USER_NOT_FOUND));
 
