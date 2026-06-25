@@ -37,6 +37,11 @@ public class UserService {
             throw new CustomException(ApiResponseErrorMessage.DUPLICATE_EMAIL);
         }
 
+        if (userRepository.existsByNickname(request.getNickname())) {
+            throw new CustomException(ApiResponseErrorMessage.DUPLICATE_NICKNAME);
+        }
+
+
         UploadFile uploadFile = null;
         if (profileImage != null && !profileImage.isEmpty()) {
             uploadFile = fileService.upload(profileImage);
