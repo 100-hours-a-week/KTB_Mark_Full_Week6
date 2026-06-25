@@ -2,6 +2,7 @@ package com.mark.community.controller;
 
 
 import com.mark.community.dto.LoginRequest;
+import com.mark.community.dto.LoginResponse;
 import com.mark.community.entity.User;
 import com.mark.community.messages.ApiResponseMessage;
 import com.mark.community.response.ApiResponse;
@@ -24,9 +25,10 @@ public class AuthController {
     public ResponseEntity<?> loginUser(HttpSession session, @RequestBody LoginRequest request){
         User user = authService.loginUser(request);
         session.setAttribute("userId", user.getId());
+        Long fileId = user.getProfileFile() != null ? user.getProfileFile().getId() : null;
         return ResponseEntity
                 .status(ApiResponseMessage.SUCCESS_LOGIN.getStatusCode())
-                .body(new ApiResponse<>(ApiResponseMessage.SUCCESS_LOGIN));
+                .body(new ApiResponse<>(ApiResponseMessage.SUCCESS_LOGIN, new LoginResponse(fileId)));
     }
 
 }
