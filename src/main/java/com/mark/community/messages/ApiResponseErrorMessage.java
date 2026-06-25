@@ -4,7 +4,8 @@ import org.springframework.http.HttpStatus;
 
 public enum ApiResponseErrorMessage {
     FAIL_LOGIN("사용자 정보가 일치하지 않습니다", HttpStatus.UNAUTHORIZED),
-    DUPLICATE_EMAIL("이미 존재하는 이메일 입니다.", HttpStatus.CONFLICT),
+    DUPLICATE_EMAIL("중복된 이메일 입니다.", HttpStatus.CONFLICT),
+    DUPLICATE_NICKNAME("중복된 닉네임 입니다.", HttpStatus.CONFLICT),
     MISSING_REQUIRED_PARAMETER("필수값이 누락됐습니다.", HttpStatus.CONFLICT),
     EXPIRED_SESSION("세션이 만료됐습니다.", HttpStatus.UNAUTHORIZED),
     INVALID_REQUEST("잘못된 요청입니다.", HttpStatus.BAD_REQUEST),
