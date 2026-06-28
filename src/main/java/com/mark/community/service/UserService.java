@@ -3,6 +3,7 @@ package com.mark.community.service;
 import com.mark.community.dto.EditUserRequest;
 import com.mark.community.dto.RegisterRequest;
 import com.mark.community.dto.RegisterResponse;
+import com.mark.community.dto.UserResponse;
 import com.mark.community.entity.UploadFile;
 import com.mark.community.entity.User;
 import com.mark.community.exception.CustomException;
@@ -100,5 +101,13 @@ public class UserService {
     public boolean existsUser(Long userId){
         return userRepository.existsByIdAndDeletedFalse(userId);
 
+    }
+
+    @Transactional(readOnly = true)
+    public UserResponse getUser(Long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ApiResponseErrorMessage.USER_NOT_FOUND));
+        Long profileFileId = user.getProfileFile() != null ? user.getProfileFile().getId() : null;
+        return new UserResponse(user.getEmail(), user.getNickname(), profileFileId);
     }
 }
