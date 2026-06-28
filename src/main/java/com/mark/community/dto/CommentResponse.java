@@ -18,7 +18,8 @@ public class CommentResponse {
         this.commentId = commentId;
     }
 
-    public CommentResponse(String nickname, String comment, Long userId, Long parentCommentId , boolean deleted){
+    public CommentResponse(Long commentId, String nickname, String comment, Long userId, Long parentCommentId , boolean deleted){
+        this.commentId = commentId;
         this.nickname = nickname;
         this.comment = comment;
         this.userId = userId;
