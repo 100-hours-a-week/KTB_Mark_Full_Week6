@@ -34,9 +34,9 @@ public class UserServiceTest {
     @Mock
     private UserRepository userRepository;
     @Mock
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-    @Mock
     private FileService fileService;
+    @Mock
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @InjectMocks
     private UserService userService;
@@ -75,6 +75,7 @@ public class UserServiceTest {
 
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.existsByNickname(anyString())).thenReturn(false);
+        when(bCryptPasswordEncoder.encode(anyString())).thenReturn("encodedPassword");
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         RegisterResponse response = userService.registerUser(request, null);
@@ -92,6 +93,7 @@ public class UserServiceTest {
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.existsByNickname(anyString())).thenReturn(false);
         when(fileService.upload(realFile)).thenReturn(uploadFile);
+        when(bCryptPasswordEncoder.encode(anyString())).thenReturn("encodedPassword");
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         RegisterResponse response = userService.registerUser(request, realFile);
@@ -147,15 +149,17 @@ public class UserServiceTest {
     }
 
     @Test
-    void 회원수정시_비밀번호만_요청하면_비밀번호가_변경된다(){
+    void 회원수정시_비밀번호만_요청하면_암호화되어_변경된다(){
         EditUserRequest request = new EditUserRequest(null, "newPassword1!");
         User user = createUser();
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(bCryptPasswordEncoder.encode("newPassword1!")).thenReturn("encodedNewPassword");
 
         userService.editUser(request, null, 1L);
 
-        assertEquals(request.getPassword(), user.getPassword());
+        assertEquals("encodedNewPassword", user.getPassword());
+        assertNotEquals(request.getPassword(), user.getPassword());
         verify(fileService, never()).upload(any());
     }
 
