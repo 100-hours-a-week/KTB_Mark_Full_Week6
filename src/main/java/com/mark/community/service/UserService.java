@@ -84,7 +84,7 @@ public class UserService {
             }
             user.setNickname(request.getNickname());
         } else if(request.getNickname() == null && !request.getPassword().isBlank()) {
-            user.setPassword(request.getPassword());
+            user.setPassword(passwordEncode(request.getPassword()));
         } else {
             throw new CustomException(ApiResponseErrorMessage.INVALID_REQUEST);
         }
