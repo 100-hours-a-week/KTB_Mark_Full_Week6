@@ -74,8 +74,9 @@ public class CommentController {
 
 
     @GetMapping("/posts/{postId}/comments")
-    public ResponseEntity<?> getComments(@PathVariable("postId") Long postId){
-        List<CommentResponse> comments = commentService.getComments(postId);
+    public ResponseEntity<?> getComments(@PathVariable("postId") Long postId,
+                                         @AuthenticationPrincipal CustomUserDetails userDetails){
+        List<CommentResponse> comments = commentService.getComments(postId, userDetails.getId());
 
         return ResponseEntity
                 .status(ApiResponseMessage.SUCCESS_GET_COMMENTS.getStatusCode())

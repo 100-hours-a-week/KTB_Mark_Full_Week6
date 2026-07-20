@@ -137,7 +137,7 @@ public class CommentServiceTest {
         deletedComment.setDeleted(true);
         when(commentRepository.findByPostId(1L)).thenReturn(List.of(deletedComment));
 
-        List<CommentResponse> responses = commentService.getComments(1L);
+        List<CommentResponse> responses = commentService.getComments(1L, 999L);
 
         assertEquals("삭제된 댓글입니다", responses.get(0).getComment());
     }
@@ -148,7 +148,7 @@ public class CommentServiceTest {
         Comment comment = new Comment(null, writer, "정상 댓글", new Date(), null);
         when(commentRepository.findByPostId(1L)).thenReturn(List.of(comment));
 
-        List<CommentResponse> responses = commentService.getComments(1L);
+        List<CommentResponse> responses = commentService.getComments(1L, 999L);
 
         assertEquals("정상 댓글", responses.get(0).getComment());
     }

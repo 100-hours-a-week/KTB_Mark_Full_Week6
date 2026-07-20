@@ -85,7 +85,7 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommentResponse> getComments(Long postId) {
+    public List<CommentResponse> getComments(Long postId, Long userId) {
         List<Comment> comments = commentRepository.findByPostId(postId);
 
         return comments.stream()
@@ -95,7 +95,8 @@ public class CommentService {
                         comment.isDeleted() ? "삭제된 댓글입니다" : comment.getComment(),
                         comment.getUser().getId(),
                         comment.getParentCommentId(),
-                        comment.isDeleted()
+                        comment.isDeleted(),
+                        userId.equals(comment.getUser().getId())
                 )).toList();
 
     }

@@ -14,6 +14,7 @@ public class CommentResponse {
     private Long userId;
     private boolean deleted;
     private String userRole;
+    private boolean permission;
 
 
     public CommentResponse(Long commentId, String comment ,String userRole){
@@ -22,12 +23,13 @@ public class CommentResponse {
         this.userRole = userRole;
     }
 
-    public CommentResponse(Long commentId, String nickname, String comment, Long userId, Long parentCommentId , boolean deleted){
+    public CommentResponse(Long commentId, String nickname, String comment, Long userId, Long parentCommentId, boolean deleted, boolean permission){
         this.commentId = commentId;
         this.nickname = nickname;
         this.comment = comment;
         this.userId = userId;
         this.parentCommentId = parentCommentId;
         this.deleted = deleted;
+        this.permission = permission;
     }
 }
