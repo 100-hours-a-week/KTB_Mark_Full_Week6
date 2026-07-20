@@ -275,6 +275,20 @@ public class PostServiceTest {
     }
 
     @Test
+    void 게시글저장시_최근1분간_10개이상_작성했으면_예외를_던진다(){
+        Post post = new Post("기존제목", "기존내용");
+        User writer = createUser();
+        writer.setId(1L);
+        post.setUser(writer);
+        PostRequest request = new PostRequest("새제목", "새내용", null);
+        CustomUserDetails userDetails = createUserDetails();
+        when(postRepository.findById(1L)).thenReturn(Optional.of(post));
+        when(postRepository.countRecentPostsByUser(eq(1L), any(Date.class))).thenReturn(10L);
+
+        assertThrows(CustomException.class, () -> postService.savePost(1L, request, null, userDetails));
+    }
+
+    @Test
     void 게시글목록조회시_lastPostId가_없으면_findPosts_pageable만_호출된다(){
         User writer = createUser();
         Post post = new Post("제목", "내용", writer);
@@ -336,10 +350,10 @@ public class PostServiceTest {
     }
 
     @Test
-    void 좋아요추가시_이미_좋아요한_상태면_저장하지_않는다(){
+    void 좋아요추가시_이미_좋아요한_상태면_예외를_던진다(){
         when(likeRepository.findById(any(PostLikeId.class))).thenReturn(Optional.of(new Like(1L, 1L)));
 
-        postService.addLike(1L, 1L);
+        assertThrows(CustomException.class, () -> postService.addLike(1L, 1L));
 
         verify(likeRepository, never()).save(any());
     }

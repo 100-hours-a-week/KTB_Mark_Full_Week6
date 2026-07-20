@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -18,5 +19,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("SELECT p FROM Post p JOIN FETCH p.user WHERE p.id < :lastPostId AND p.deleted = false AND p.temp = false ORDER BY p.id DESC")
     List<Post> findPosts(@Param("lastPostId") Long lastPostId, Pageable pageable);
+
+    @Query("SELECT COUNT(p) FROM Post p WHERE p.user.id = :userId AND p.temp = false AND p.postTime > :since")
+    long countRecentPostsByUser(@Param("userId") Long userId, @Param("since") Date since);
 
 }

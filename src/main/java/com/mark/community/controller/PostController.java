@@ -124,11 +124,11 @@ public class PostController {
                                      @AuthenticationPrincipal CustomUserDetails userDetails){
 
 
-        postService.addLike(postId, userDetails.getId());
+        long likeCount = postService.addLike(postId, userDetails.getId());
 
         return ResponseEntity
                 .status(ApiResponseMessage.SUCCESS_ADD_LIKE.getStatusCode())
-                .body(new ApiResponse<>(ApiResponseMessage.SUCCESS_ADD_LIKE));
+                .body(new ApiResponse<>(ApiResponseMessage.SUCCESS_ADD_LIKE, new LikeResponse(likeCount)));
     }
 
 
@@ -136,17 +136,17 @@ public class PostController {
     public ResponseEntity<?> deleteLike(@PathVariable("postId") Long postId,
                                         @AuthenticationPrincipal CustomUserDetails userDetails){
 
-        postService.deleteLike(postId, userDetails.getId());
+        long likeCount = postService.deleteLike(postId, userDetails.getId());
 
         return ResponseEntity
                 .status(ApiResponseMessage.SUCCESS_DELETE_LIKE.getStatusCode())
-                .body(new ApiResponse<>(ApiResponseMessage.SUCCESS_DELETE_LIKE));
+                .body(new ApiResponse<>(ApiResponseMessage.SUCCESS_DELETE_LIKE, new LikeResponse(likeCount)));
     }
 
     @PatchMapping("/{postId}")
     public ResponseEntity<?> editPost(@PathVariable("postId") Long postId,
                                       @RequestPart("request") PostTempRequest request,
-                                      @RequestPart("images") MultipartFile[] images,
+                                      @RequestPart(value = "images", required = false) MultipartFile[] images,
                                       @AuthenticationPrincipal CustomUserDetails userDetails
     ){
         Post post = postService.editPost(postId, request, images, userDetails.getId());

@@ -172,6 +172,12 @@ public class PostService {
             throw new CustomException(ApiResponseErrorMessage.MISSING_REQUIRED_PARAMETER);
         }
 
+        Date oneMinuteAgo = new Date(System.currentTimeMillis() - 60 * 1000L);
+        long recentPostCount = postRepository.countRecentPostsByUser(userDetails.getId(), oneMinuteAgo);
+        if(recentPostCount >= 10){
+            throw new CustomException(ApiResponseErrorMessage.POST_RATE_LIMIT_EXCEEDED);
+        }
+
         if(images != null){
             for(MultipartFile file : images){
                 UploadFile uploadfile = fileService.upload(file);
@@ -233,18 +239,21 @@ public class PostService {
     }
 
 
-    public void addLike(Long postId, Long userId) {
+    public long addLike(Long postId, Long userId) {
         Optional<Like> checkLike = likeRepository.findById(new PostLikeId(userId, postId));
-        if(checkLike.isEmpty()) {
-            likeRepository.save(new Like(userId, postId));
+        if(checkLike.isPresent()) {
+            throw new CustomException(ApiResponseErrorMessage.ALREADY_LIKED);
         }
+        likeRepository.save(new Like(userId, postId));
+        return likeRepository.countByIdPostId(postId);
     }
 
-    public void deleteLike(Long postId, Long userId) {
+    public long deleteLike(Long postId, Long userId) {
         Optional<Like> checkLike = likeRepository.findById(new PostLikeId(userId, postId));
         if(checkLike.isPresent()) {
             likeRepository.delete(new Like(userId, postId));
         }
+        return likeRepository.countByIdPostId(postId);
     }
 
     public Post editPost(Long postId, PostTempRequest request, MultipartFile[] images, Long userId) {
