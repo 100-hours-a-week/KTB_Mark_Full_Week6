@@ -28,7 +28,6 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.PrintWriter;
@@ -113,7 +112,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://ec2-15-164-229-226.ap-northeast-2.compute.amazonaws.com/"));
+        config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type", "X-XSRF-TOKEN", "Idempotency-Key"));
         config.setAllowCredentials(true);
