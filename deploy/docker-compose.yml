@@ -1,0 +1,29 @@
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    platform: linux/amd64
+    image: docker-backend:latest
+    container_name: backend
+    expose:
+      - "8080"
+    volumes:
+      - backend-uploads:/app/uploads
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ../../assignment_10
+      dockerfile: Dockerfile
+    platform: linux/amd64
+    image: docker-frontend:latest
+    container_name: frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  backend-uploads:
