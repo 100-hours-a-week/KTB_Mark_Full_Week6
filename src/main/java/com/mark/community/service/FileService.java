@@ -8,6 +8,7 @@ import com.mark.community.messages.ApiResponseErrorMessage;
 import com.mark.community.messages.ErrorMessage;
 import com.mark.community.repository.UploadFileRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,7 +20,8 @@ import java.util.UUID;
 @Service
 @Slf4j
 public class FileService {
-    private final String UPLOAD_DIR = "uploads/";
+    @Value("${file.upload-dir:uploads/}")
+    private String UPLOAD_DIR;
 
     private final UploadFileRepository uploadFileRepository;
 
