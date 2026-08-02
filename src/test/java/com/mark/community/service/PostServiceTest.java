@@ -294,8 +294,8 @@ public class PostServiceTest {
         Post post = new Post("제목", "내용", writer);
         post.setPostTime(new Date());
         when(postRepository.findPosts(any(Pageable.class))).thenReturn(List.of(post));
-        when(likeRepository.countByIdPostId(any())).thenReturn(0L);
-        when(commentRepository.countByPostId(any())).thenReturn(0L);
+        when(likeRepository.countGroupByPostIds(any())).thenReturn(List.of());
+        when(commentRepository.countGroupedByPostIds(any())).thenReturn(List.of());
 
         PostListResponse response = postService.getPosts(10, null);
 
@@ -310,8 +310,8 @@ public class PostServiceTest {
         Post post = new Post("제목", "내용", writer);
         post.setPostTime(new Date());
         when(postRepository.findPosts(eq(5L), any(Pageable.class))).thenReturn(List.of(post));
-        when(likeRepository.countByIdPostId(any())).thenReturn(0L);
-        when(commentRepository.countByPostId(any())).thenReturn(0L);
+        when(likeRepository.countGroupByPostIds(any())).thenReturn(List.of());
+        when(commentRepository.countGroupedByPostIds(any())).thenReturn(List.of());
 
         PostListResponse response = postService.getPosts(10, 5L);
 
@@ -326,8 +326,8 @@ public class PostServiceTest {
         Post post = new Post("제목", "내용", writer);
         post.setPostTime(new Date());
         when(postRepository.findPosts(any(Pageable.class))).thenReturn(List.of(post));
-        when(likeRepository.countByIdPostId(any())).thenReturn(0L);
-        when(commentRepository.countByPostId(any())).thenReturn(0L);
+        when(likeRepository.countGroupByPostIds(any())).thenReturn(List.of());
+        when(commentRepository.countGroupedByPostIds(any())).thenReturn(List.of());
 
         PostListResponse response = postService.getPosts(10, null);
 
@@ -341,8 +341,8 @@ public class PostServiceTest {
         post.setPostTime(new Date());
         post.setReports(5);
         when(postRepository.findPosts(any(Pageable.class))).thenReturn(List.of(post));
-        when(likeRepository.countByIdPostId(any())).thenReturn(0L);
-        when(commentRepository.countByPostId(any())).thenReturn(0L);
+        when(likeRepository.countGroupByPostIds(any())).thenReturn(List.of());
+        when(commentRepository.countGroupedByPostIds(any())).thenReturn(List.of());
 
         PostListResponse response = postService.getPosts(10, null);
 

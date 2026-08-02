@@ -17,7 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -204,11 +206,26 @@ public class PostService {
         PostListResponse postListResponse = new PostListResponse();
         List<PostResponse> tempList = new ArrayList<>();
 
+        List<Long> postIds = new ArrayList<>();
+        for (Post post : posts) {
+            postIds.add(post.getId());
+        }
+
+        Map<Long, Long> likeCounts = new HashMap<>();
+        for (PostCount row : likeRepository.countGroupByPostIds(postIds)) {
+            likeCounts.put(row.getPostId(), row.getCount());
+        }
+
+        Map<Long, Long> commentCounts = new HashMap<>();
+        for (PostCount row : commentRepository.countGroupedByPostIds(postIds)) {
+            commentCounts.put(row.getPostId(), row.getCount());
+        }
+
         for(Post post : posts){
             String userNickname = (post.getUser().isDeleted()) ? "알 수 없음" : post.getUser().getNickname();
 
-            long likeCount = likeRepository.countByIdPostId(post.getId());
-            long commentCount = commentRepository.countByPostId(post.getId());
+            long likeCount = likeCounts.getOrDefault(post.getId(), 0L);
+            long commentCount = commentCounts.getOrDefault(post.getId(), 0L);
             Long thumbnailId = post.getUser().getProfileFile() != null
                     ? post.getUser().getProfileFile().getId()
                     : null;
