@@ -1,12 +1,13 @@
 services:
   backend:
-    image: docker-backend:latest
+    image: parkjuseung/community-backend:latest
     container_name: backend
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
       - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - FILE_UPLOAD_DIR=${FILE_UPLOAD_DIR:-/app/uploads/}
     expose:
       - "8080"
     volumes:
@@ -14,7 +15,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: docker-frontend:latest
+    image: parkjuseung/community-frontend:latest
     container_name: frontend
     ports:
       - "80:80"
