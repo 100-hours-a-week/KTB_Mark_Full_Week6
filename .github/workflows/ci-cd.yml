@@ -61,12 +61,6 @@ jobs:
           DOCKER_EXISTS=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} 'command -v docker >/dev/null && echo "true" || echo "false"')
           echo "docker_exists=$DOCKER_EXISTS" >> $GITHUB_OUTPUT
 
-      - name: Check if Java is installed
-        id: check-java
-        run: |
-          JAVA_EXISTS=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} 'command -v java >/dev/null && echo "true" || echo "false"')
-          echo "java_exists=$JAVA_EXISTS" >> $GITHUB_OUTPUT
-
       - name: Install Docker on EC2
         if: steps.check-docker.outputs.docker_exists == 'false'
         run: |
@@ -76,13 +70,6 @@ jobs:
             sudo yum install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
             sudo systemctl enable --now docker
             sudo usermod -aG docker $USER
-          EOF
-
-      - name: Install Java on EC2
-        if: steps.check-java.outputs.java_exists == 'false'
-        run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
-            sudo yum install -y java-21-openjdk
           EOF
 
       - name: Deploy to EC2 via Docker Compose
