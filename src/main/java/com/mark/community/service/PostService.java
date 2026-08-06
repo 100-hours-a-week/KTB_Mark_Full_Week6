@@ -34,6 +34,7 @@ public class PostService {
     private final PostReportRepository postReportRepository;
     private final FileService fileService;
     private final UserService userService;
+    private final NotificationService notificationService;
 
     public PostService(PostRepository postRepository,
                        UserRepository userRepository,
@@ -43,7 +44,8 @@ public class PostService {
                        CommentRepository commentRepository,
                        PostReportRepository postReportRepository,
                        FileService fileService,
-                       UserService userService){
+                       UserService userService,
+                       NotificationService notificationService){
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.postImageRepository = postImageRepository;
@@ -53,6 +55,7 @@ public class PostService {
         this.postReportRepository = postReportRepository;
         this.fileService = fileService;
         this.userService = userService;
+        this.notificationService = notificationService;
     }
 
     public Post postTemp(PostTempRequest request, Long userId) {
@@ -100,7 +103,7 @@ public class PostService {
     }
 
     public PostResponse getPost(Long postId, Long userId) {
-        Post post = postRepository.findById(postId)
+        Post post = postRepository.findPost(postId)
                 .orElseThrow(() -> new CustomException(ApiResponseErrorMessage.POST_NOT_FOUND));
 
         List<PostImage> tempList = postImageRepository.findByIdPostId(postId);
@@ -261,7 +264,11 @@ public class PostService {
         if(checkLike.isPresent()) {
             throw new CustomException(ApiResponseErrorMessage.ALREADY_LIKED);
         }
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(ApiResponseErrorMessage.POST_NOT_FOUND));
+
         likeRepository.save(new Like(userId, postId));
+        notificationService.notifyPostLiked(post.getUser().getId(), userId, postId);
         return likeRepository.countByIdPostId(postId);
     }
 
