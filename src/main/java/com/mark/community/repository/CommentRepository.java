@@ -12,10 +12,12 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     long countByPostId(Long postId);
-    List<Comment> findByPostId(Long postId);
+
+    @Query("SELECT c FROM Comment c JOIN FETCH c.user WHERE c.post.id = :postId")
+    List<Comment> findByPostId(@Param("postId") Long postId);
     long countByUserId(Long userId);
 
-    @Query("SELECT comments.post.id AS postId, COUNT(comments) AS count FROM Comment comments WHERE comments.post.id IN :postIds GROUP BY comments.post.id")
+    @Query("SELECT c.post.id AS postId, COUNT(c) AS count FROM Comment c WHERE c.post.id IN :postIds GROUP BY c.post.id")
     List<PostCount> countGroupedByPostIds(@Param("postIds") List<Long> postIds);
 
 }
