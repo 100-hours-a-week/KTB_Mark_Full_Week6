@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
@@ -22,5 +23,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("SELECT COUNT(p) FROM Post p WHERE p.user.id = :userId AND p.temp = false AND p.postTime > :since")
     long countRecentPostsByUser(@Param("userId") Long userId, @Param("since") Date since);
+
+    @Query("SELECT p FROM Post p JOIN FETCH p.user u LEFT JOIN FETCH u.profileFile WHERE p.id = :postId")
+    Optional<Post> findPost(@Param("postId") Long postId);
 
 }
