@@ -30,11 +30,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(user.getRole().getValue()));
 
+        Long profileFileId = user.getProfileFile() != null ? user.getProfileFile().getId() : null;
+
         return new CustomUserDetails(
                 user.getId(),
                 user.getEmail(),
                 user.getPassword(),
-                user.getProfileFile().getId(),
+                profileFileId,
                 authorities
         );
     }
