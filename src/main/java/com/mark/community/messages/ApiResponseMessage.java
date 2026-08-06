@@ -23,7 +23,12 @@ public enum ApiResponseMessage {
     SUCCESS_GET_FILE("파일 조회에 성공했습니다.", HttpStatus.OK),
     SUCCESS_ADD_REPORT("신고에 성공했습니다.", HttpStatus.OK),
     SUCCESS_GET_USER("유저 정보를 불러왔습니다.", HttpStatus.OK),
-    SUCCESS_CSRF_TOKEN("CSRF 토큰을 불러왔습니다.", HttpStatus.OK);
+    SUCCESS_CSRF_TOKEN("CSRF 토큰을 불러왔습니다.", HttpStatus.OK),
+    SUCCESS_GET_NOTIFICATIONS("알림 목록을 불러왔습니다.", HttpStatus.OK),
+    SUCCESS_UPDATE_NOTIFICATION("알림을 읽음 처리했습니다.", HttpStatus.OK),
+    SUCCESS_UPDATE_ALL_NOTIFICATIONS("모든 알림을 읽음 처리했습니다.", HttpStatus.OK),
+    SUCCESS_DELETE_NOTIFICATION("알림을 삭제했습니다.", HttpStatus.OK),
+    SUCCESS_DELETE_ALL_NOTIFICATIONS("모든 알림을 삭제했습니다.", HttpStatus.OK);
 
     private final String message;
     private final HttpStatus status;
