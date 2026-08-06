@@ -88,3 +88,22 @@ CREATE TABLE IF NOT EXISTS post_report
     CONSTRAINT FK_USER_TO_REPORT_1 FOREIGN KEY (user_id) REFERENCES users (id),
     CONSTRAINT FK_POST_TO_REPORT_1 FOREIGN KEY (post_id) REFERENCES post (id)
 );
+
+CREATE TABLE IF NOT EXISTS notification
+(
+    id           BIGINT      NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    recipient_id BIGINT      NOT NULL,
+    actor_id     BIGINT      NOT NULL,
+    type         varchar(20) NOT NULL,
+    post_id      BIGINT      NOT NULL,
+    comment_id   BIGINT NULL,
+    is_read      boolean     NOT NULL DEFAULT false,
+    created_at   TIMESTAMP NULL,
+    deleted      boolean     NOT NULL DEFAULT false,
+    CONSTRAINT FK_USER_TO_NOTIFICATION_RECIPIENT FOREIGN KEY (recipient_id) REFERENCES users (id),
+    CONSTRAINT FK_USER_TO_NOTIFICATION_ACTOR FOREIGN KEY (actor_id) REFERENCES users (id),
+    CONSTRAINT FK_POST_TO_NOTIFICATION FOREIGN KEY (post_id) REFERENCES post (id),
+    CONSTRAINT FK_COMMENT_TO_NOTIFICATION FOREIGN KEY (comment_id) REFERENCES comments (id),
+    INDEX idx_notification_recipient_deleted_created (recipient_id, deleted, created_at DESC),
+    INDEX idx_notification_recipient_deleted_read (recipient_id, deleted, is_read)
+);

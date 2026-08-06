@@ -69,6 +69,19 @@ CREATE TABLE post_report
     post_id BIGINT NOT NULL
 );
 
+CREATE TABLE notification
+(
+    id           BIGINT      NOT NULL AUTO_INCREMENT,
+    recipient_id BIGINT      NOT NULL,
+    actor_id     BIGINT      NOT NULL,
+    type         varchar(20) NOT NULL,
+    post_id      BIGINT      NOT NULL,
+    comment_id   BIGINT NULL,
+    is_read      boolean     NOT NULL DEFAULT false,
+    created_at   TIMESTAMP NULL,
+    deleted      boolean     NOT NULL DEFAULT false
+);
+
 ALTER TABLE users
     ADD CONSTRAINT PK_USER PRIMARY KEY (id);
 
@@ -92,6 +105,9 @@ ALTER TABLE post_like
 
 ALTER TABLE post_report
     ADD CONSTRAINT PK_REPORT PRIMARY KEY (user_id, post_id);
+
+ALTER TABLE notification
+    ADD CONSTRAINT PK_NOTIFICATION PRIMARY KEY (id);
 
 ALTER TABLE comments
     ADD CONSTRAINT FK_POST_TO_COMMENT_1 FOREIGN KEY (post_id) REFERENCES post (id);
@@ -129,7 +145,21 @@ ALTER TABLE post_report
 ALTER TABLE post_report
     ADD CONSTRAINT FK_POST_TO_REPORT_1 FOREIGN KEY (post_id) REFERENCES post (id);
 
+ALTER TABLE notification
+    ADD CONSTRAINT FK_USER_TO_NOTIFICATION_RECIPIENT FOREIGN KEY (recipient_id) REFERENCES users (id);
+
+ALTER TABLE notification
+    ADD CONSTRAINT FK_USER_TO_NOTIFICATION_ACTOR FOREIGN KEY (actor_id) REFERENCES users (id);
+
+ALTER TABLE notification
+    ADD CONSTRAINT FK_POST_TO_NOTIFICATION FOREIGN KEY (post_id) REFERENCES post (id);
+
+ALTER TABLE notification
+    ADD CONSTRAINT FK_COMMENT_TO_NOTIFICATION FOREIGN KEY (comment_id) REFERENCES comments (id);
+
 CREATE INDEX idx_post_deleted_temp_id ON post (deleted, temp, id DESC);
 CREATE INDEX idx_comment_post_id ON comments (post_id);
 CREATE INDEX idx_like_post_id ON post_like (post_id);
 CREATE INDEX idx_post_image_post_id ON post_image (post_id);
+CREATE INDEX idx_notification_recipient_deleted_created ON notification (recipient_id, deleted, created_at DESC);
+CREATE INDEX idx_notification_recipient_deleted_read ON notification (recipient_id, deleted, is_read);
