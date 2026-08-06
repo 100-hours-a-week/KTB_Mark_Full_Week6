@@ -21,7 +21,7 @@ public class UserController {
     }
         @PostMapping
         public ResponseEntity<?> registerUser(@RequestPart("request") RegisterRequest request,
-                                           @RequestPart("profileImage") MultipartFile profileImage){
+                                           @RequestPart(value = "profileImage", required = false) MultipartFile profileImage){
         RegisterResponse registerResponse =  userService.registerUser(request, profileImage);
 
             return ResponseEntity
