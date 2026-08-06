@@ -1,9 +1,9 @@
 package com.mark.community.config;
 
 import com.mark.community.enums.UserRole;
-import com.mark.community.exception.CustomException;
 import com.mark.community.filter.LoginAuthenticationFilter;
 import com.mark.community.messages.ApiResponseErrorMessage;
+import com.mark.community.response.ErrorResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -75,10 +75,8 @@ public class SecurityConfig {
                             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                             response.setCharacterEncoding("UTF-8");
 
-                            CustomException customException = new CustomException(ApiResponseErrorMessage.UNAUTHORIZED);
-
                             PrintWriter writer = response.getWriter();
-                            writer.write(objectMapper.writeValueAsString(customException));
+                            writer.write(objectMapper.writeValueAsString(new ErrorResponse(ApiResponseErrorMessage.UNAUTHORIZED.getMessage())));
                             writer.flush();
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
@@ -86,10 +84,8 @@ public class SecurityConfig {
                             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                             response.setCharacterEncoding("UTF-8");
 
-                            CustomException customException = new CustomException(ApiResponseErrorMessage.FORBIDDEN);
-
                             PrintWriter writer = response.getWriter();
-                            writer.write(objectMapper.writeValueAsString(customException));
+                            writer.write(objectMapper.writeValueAsString(new ErrorResponse(ApiResponseErrorMessage.FORBIDDEN.getMessage())));
                             writer.flush();
 
                         })
