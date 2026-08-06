@@ -28,12 +28,14 @@ public class CommentService {
     private final PostRepository postRepository;
     private final AuthService authService;
     private final UserService userService;
+    private final NotificationService notificationService;
 
     public CommentResponse commentSave(Long postId, CommentRequest request, CustomUserDetails userDetails) {
         User user = userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new CustomException(ApiResponseErrorMessage.USER_NOT_FOUND));
 
-        Post post = postRepository.getReferenceById(postId);
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(ApiResponseErrorMessage.POST_NOT_FOUND));
 
 
         Comment commentData = new Comment(
@@ -44,6 +46,15 @@ public class CommentService {
                 request.getParentCommentId()
         );
         Comment comment = commentRepository.save(commentData);
+
+        Long parentCommentId = request.getParentCommentId();
+        if (parentCommentId == null) {
+            notificationService.notifyNewComment(post.getUser().getId(), userDetails.getId(), postId, comment.getId());
+        } else {
+            Comment parentComment = commentRepository.findById(parentCommentId)
+                    .orElseThrow(() -> new CustomException(ApiResponseErrorMessage.COMMENT_NOT_FOUND));
+            notificationService.notifyNewReply(post.getUser().getId(), parentComment.getUser().getId(), userDetails.getId(), postId, comment.getId());
+        }
 
         if (user.getRole() != UserRole.ROLE_AUTH_USER) {
             long commentCount = commentRepository.countByUserId(userDetails.getId());
