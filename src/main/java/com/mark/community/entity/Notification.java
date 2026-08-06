@@ -29,6 +29,8 @@ public class Notification {
 
     private Date createdAt;
 
+    private boolean deleted = false;
+
     public Notification(Long recipientId, Long actorId, NotificationType type, Long postId, Long commentId, Date createdAt) {
         this.recipientId = recipientId;
         this.actorId = actorId;
@@ -40,5 +42,9 @@ public class Notification {
 
     public void setRead(boolean read) {
         this.read = read;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }
