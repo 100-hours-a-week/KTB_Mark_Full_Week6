@@ -17,7 +17,8 @@ public enum ApiResponseErrorMessage {
     UNAUTHORIZED("인증에 실패했습니다.", HttpStatus.UNAUTHORIZED),
     FORBIDDEN("권한이 없습니다.", HttpStatus.FORBIDDEN),
     POST_RATE_LIMIT_EXCEEDED("1분에 게시글은 10개 미만으로 작성할 수 있습니다.", HttpStatus.TOO_MANY_REQUESTS),
-    ALREADY_LIKED("이미 좋아요를 눌렀습니다.", HttpStatus.CONFLICT);
+    ALREADY_LIKED("이미 좋아요를 눌렀습니다.", HttpStatus.CONFLICT),
+    NOTIFICATION_NOT_FOUND("알림을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
 
     private final String message;
     private final HttpStatus status;
