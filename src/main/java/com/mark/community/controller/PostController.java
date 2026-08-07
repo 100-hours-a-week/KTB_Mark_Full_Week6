@@ -108,10 +108,11 @@ public class PostController {
 
     @GetMapping
     public ResponseEntity<?> getPosts(@RequestParam(value = "size", defaultValue = "10") int size,
-                                      @RequestParam(value = "lastPostId", required = false) Long lastPostId)
+                                      @RequestParam(value = "lastPostId", required = false) Long lastPostId,
+                                      @RequestParam(value = "category", required = false) String category)
     {
 
-        PostListResponse postListResponse = postService.getPosts(size, lastPostId);
+        PostListResponse postListResponse = postService.getPosts(size, lastPostId, category);
 
 
         return ResponseEntity
