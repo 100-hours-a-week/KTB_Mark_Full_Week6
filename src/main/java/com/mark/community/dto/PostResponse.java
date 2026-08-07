@@ -22,6 +22,7 @@ public class PostResponse {
     private boolean blind;
     private boolean edited;
     private boolean permission;
+    private String category;
 
 
 
@@ -39,7 +40,8 @@ public class PostResponse {
                         List<Long> fileIds,
                         boolean edited,
                         boolean permission,
-                        String postTime
+                        String postTime,
+                        String category
     ){
         this.postId = postId;
         this.title = title;
@@ -52,6 +54,7 @@ public class PostResponse {
         this.edited = edited;
         this.permission = permission;
         this.postTime = postTime;
+        this.category = category;
     }
 
     public PostResponse(Long postId,
@@ -63,7 +66,8 @@ public class PostResponse {
                         Counts counts,
                         String postTime,
                         boolean deleted,
-                        boolean blind){
+                        boolean blind,
+                        String category){
         this.postId = postId;
         this.title = title;
         this.body = body;
@@ -74,6 +78,7 @@ public class PostResponse {
         this.postTime = postTime;
         this.deleted = deleted;
         this.blind = blind;
+        this.category = category;
     }
 
     public PostResponse(){
