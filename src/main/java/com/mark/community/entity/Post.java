@@ -1,5 +1,6 @@
 package com.mark.community.entity;
 
+import com.mark.community.enums.PostCategory;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,9 @@ public class Post {
     private boolean edited;
     private boolean temp = true;
 
+    @Enumerated(EnumType.STRING)
+    private PostCategory category;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -45,6 +49,10 @@ public class Post {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    public void setCategory(PostCategory category) {
+        this.category = category;
     }
 
     public void setPostTime(Date postTime) {
