@@ -47,7 +47,8 @@ CREATE TABLE post
     post_time TIMESTAMP NULL,
     views     BIGINT      NOT NULL DEFAULT 0,
     deleted   boolean     NOT NULL DEFAULT false,
-    edited    boolean     NOT NULL DEFAULT false
+    edited    boolean     NOT NULL DEFAULT false,
+    category  varchar(20) NULL
 );
 
 CREATE TABLE post_view

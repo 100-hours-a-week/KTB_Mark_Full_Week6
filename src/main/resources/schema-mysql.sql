@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS post
     views     BIGINT      NOT NULL DEFAULT 0,
     deleted   boolean     NOT NULL DEFAULT false,
     edited    boolean     NOT NULL DEFAULT false,
+    category  varchar(20) NULL,
     CONSTRAINT FK_USER_TO_POST_1 FOREIGN KEY (user_id) REFERENCES users (id),
     INDEX idx_post_deleted_temp_id (deleted, temp, id DESC)
 );
