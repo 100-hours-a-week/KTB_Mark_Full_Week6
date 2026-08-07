@@ -13,6 +13,7 @@ public class PostTempResponse {
     private List<Long> images;
     private String title;
     private String body;
+    private String category;
 
     public PostTempResponse(Long postId){
         this.postId = postId;
@@ -23,11 +24,12 @@ public class PostTempResponse {
         this.images = images;
     }
 
-    public PostTempResponse(Long postId, String title, String body, List<Long> images){
+    public PostTempResponse(Long postId, String title, String body, List<Long> images, String category){
         this.postId = postId;
         this.title = title;
         this.body = body;
         this.images = images;
+        this.category = category;
     }
 
     public String getTitle() {
@@ -40,5 +42,9 @@ public class PostTempResponse {
 
     public List<Long> getImages() {
         return images;
+    }
+
+    public String getCategory() {
+        return category;
     }
 }
