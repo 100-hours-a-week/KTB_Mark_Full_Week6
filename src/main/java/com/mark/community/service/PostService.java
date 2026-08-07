@@ -5,6 +5,7 @@ import com.mark.community.entity.*;
 import com.mark.community.entity.key.PostLikeId;
 import com.mark.community.entity.key.PostReportId;
 import com.mark.community.entity.key.PostViewId;
+import com.mark.community.enums.PostCategory;
 import com.mark.community.exception.CustomException;
 import com.mark.community.messages.ApiResponseErrorMessage;
 import com.mark.community.repository.*;
@@ -86,9 +87,20 @@ public class PostService {
 
         post.setTitle(request.getTitle());
         post.setBody(request.getBody());
+        if (request.getCategory() != null && !request.getCategory().isBlank()) {
+            post.setCategory(resolveCategory(request.getCategory()));
+        }
 
 
         return new PostTempResponse(post.getId(), imageList);
+    }
+
+    private PostCategory resolveCategory(String category) {
+        try {
+            return PostCategory.checkCategory(category);
+        } catch (IllegalArgumentException e) {
+            throw new CustomException(ApiResponseErrorMessage.INVALID_REQUEST);
+        }
     }
 
     public void deletePost(Long postId, Long userId) {
@@ -140,7 +152,8 @@ public class PostService {
                 imageList,
                 post.isEdited(),
                 permission,
-                sd.format(post.getPostTime())
+                sd.format(post.getPostTime()),
+                post.getCategory() != null ? post.getCategory().name() : null
         );
 
 
@@ -173,7 +186,8 @@ public class PostService {
         }
 
         if(postRequest.getTitle() == null || postRequest.getTitle().isBlank()
-                || postRequest.getBody() == null || postRequest.getBody().isBlank()){
+                || postRequest.getBody() == null || postRequest.getBody().isBlank()
+                || postRequest.getCategory() == null || postRequest.getCategory().isBlank()){
             throw new CustomException(ApiResponseErrorMessage.MISSING_REQUIRED_PARAMETER);
         }
 
@@ -192,6 +206,7 @@ public class PostService {
 
         post.setTitle(postRequest.getTitle());
         post.setBody(postRequest.getBody());
+        post.setCategory(resolveCategory(postRequest.getCategory()));
         post.setTemp(false);
         post.setPostTime(new Date());
 
@@ -199,12 +214,13 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PostListResponse getPosts(int size, Long lastPostId) {
+    public PostListResponse getPosts(int size, Long lastPostId, String category) {
         Pageable pageable = PageRequest.of(0, size);
+        PostCategory postCategory = (category == null || category.isBlank()) ? null : resolveCategory(category);
 
         List<Post> posts = (lastPostId == null)
-                ? postRepository.findPosts(pageable)
-                : postRepository.findPosts(lastPostId, pageable);
+                ? postRepository.findPosts(postCategory, pageable)
+                : postRepository.findPosts(lastPostId, postCategory, pageable);
 
         PostListResponse postListResponse = new PostListResponse();
         List<PostResponse> tempList = new ArrayList<>();
@@ -247,7 +263,8 @@ public class PostService {
                     counts,
                     sd.format(post.getPostTime()),
                     post.isDeleted(),
-                    post.getReports() >= 5
+                    post.getReports() >= 5,
+                    post.getCategory() != null ? post.getCategory().name() : null
             );
 
             tempList.add(postResponse);
@@ -297,6 +314,7 @@ public class PostService {
         post.setEdited(true);
         if(request.getTitle() != null && !request.getTitle().isBlank()) post.setTitle(request.getTitle());
         if(request.getBody() != null && !request.getBody().isBlank()) post.setBody(request.getBody());
+        if(request.getCategory() != null && !request.getCategory().isBlank()) post.setCategory(resolveCategory(request.getCategory()));
 
 
         return post;
@@ -324,6 +342,7 @@ public class PostService {
                 .map(postImage -> postImage.getId().getFileId())
                 .toList();
 
-        return new PostTempResponse(postId, post.getTitle(), post.getBody(), imageList);
+        return new PostTempResponse(postId, post.getTitle(), post.getBody(), imageList,
+                post.getCategory() != null ? post.getCategory().name() : null);
     }
 }
